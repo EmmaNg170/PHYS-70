@@ -1,11 +1,11 @@
 var config = {
-  student_name: "YOUR NAME", // ie. John Doe
-  student_year_sem: "YOUR YEAR AND SEMESTER", // ie. Fall 2025
-  student_email: "YOUR EMAIL", // ie. jdoe@college.harvard.edu
+  student_name: "Emma Ng", // ie. John Doe
+  student_year_sem: "Summer Sessions", // ie. Fall 2025
+  student_email: "ngemma1111@gmail.com", // ie. jdoe@college.harvard.edu
 
-  background_color: "#181818",
+  background_color: "#252755",
   text_color: "#dedede",
-  accent_color: "#FFFFFF",
+  accent_color: "#aeb0e1",
 
   // Make sure to add the @import from Google Fonts to style.css, ask if you need help!
   font_family: "Lato",
