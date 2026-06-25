@@ -116,7 +116,8 @@ iframe, video {
 }
 
 img {
-  object-fit: cover;
+  width: auto:
+  height: auto:
 }
 
 img:has(+ .caption) {
@@ -126,7 +127,7 @@ img:has(+ .caption) {
 .img-duo {
   display: flex;
   flex-direction: row;
-  overflow: hidden;
+  overflow: contain;
 }
 
 .img-duo img {
