@@ -1,5 +1,37 @@
 <link rel="stylesheet" href="../style.css">
 
-<pre><code>// Put your code here
-Serial.print("Hello World!");
+<pre><code>
+const int A1A = D0; 
+const int A1B = D1;      // direction pin
+
+void setup() {
+  pinMode(A1A, OUTPUT);      // specifies in the pins are supposed to output or input data
+  pinMode(A1B, OUTPUT);       // ditto
+
+  digitalWrite(A1B, LOW);      // only spins in one direction
+}
+
+void loop() {
+  analogWrite(A1A, 140);    // low tide
+  delay(6000);
+
+  for (int speed = 140; speed <= 200; speed += 5) {      // when the speed is between 140 and 230 rmp, ever 150 miliseconds, the speed will increase by 5 rmp
+    analogWrite(A1A, speed);
+    delay(150);
+  }
+
+  analogWrite(A1A, 0);      // short pause
+  delay(200);
+
+  analogWrite(A1A, 200);    // high tide
+  delay(6000);
+
+  for (int speed = 200; speed >= 140; speed -= 5) {      // when the speed is between 230 and 140, every 150 miliseconds ,the speed will decrease by 5 rmp
+    analogWrite(A1A, speed);
+    delay(150);
+  }
+
+  analogWrite(A1A, 0);      // short pause
+  delay(200);
+}
 </code></pre>
