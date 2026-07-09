@@ -19,10 +19,22 @@
       <h1>Week 5: 3D Printing</h1>
      
       <p>
-        Design and print something that cannot be made easily through subtractive methods. Include a Fusion file (eg. <code>.f3z</code>), STL of your object, and sliced gcode in your documentation. 
-      </p>
-      
-      <p>This is how you create <a href="./Assets/example_part.stl" download>a link to download a file</a>.</p>
+I wanted to make a knob for my tuner, so I could adjust the reference pitch, so users could tune notes other than A=440 Hz. To do this, I would need to use the 3d printer as the shape of the knob is curved and sort of circular.</p>
+
+      <p>Here is the <a href="./Assets/knob_emma.stl" download>link to download my stl file!</a>.</p>
+
+    </section>
+    <section class="blog">
+        <h1>Final Project Materials List</h1>
+        <ul>
+          <li>Microphone - detects pitch</li>
+          <li>Amplifier - amplifies audio from the ESP32</li>
+          <li>Small speaker - Plays the message based on how out of tune the user is</li>
+          <li>Push button - turns on and off</li>
+          <li>Servo motor - rotates the needle to show pitch</li>
+        </ul>
+
+       <p>My very shaky plan is to have a microphone record the note being played, then the ESP32 will detect what pitch it is (whether its an A-flat, or G), and then caluclate how many cents sharp or flat the user is. Then, based on the tuning error, the ESP32 will tell the motor to rotate left or right. The more left/right the motor turns is based on how many cents sharp or flat the user is. The ESP32 will also send an audio signal to an amplifier, which will play a pre-recorded audio message to berate the user. All the components will be powered through a USB connection.</p>
     </section>
   </body>
 
