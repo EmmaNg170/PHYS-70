@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="../style.css">
+
+<pre><code>
+const int micPin = A0;
+const int ledPin = D10;
+const int sampleWindow = 50;   // 50 ms
+const int threshold = 120;     // change this if needed
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  unsigned long startMillis = millis();
+  unsigned int signalMax = 0;
+  unsigned int signalMin = 4095;   // ESP32-C3 ADC is 0-4095
+
+  while (millis() - startMillis < sampleWindow) {
+    unsigned int sample = analogRead(micPin);
+
+    if (sample > signalMax) {
+      signalMax = sample;
+    }
+    if (sample < signalMin) {
+      signalMin = sample;
+    }
+  }
+
+  unsigned int peakToPeak = signalMax - signalMin;
+  Serial.println(peakToPeak);
+
+  if (peakToPeak > threshold) {
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
+  int dB = map(peakToPeak ,58.3, 150, 0, 120);
+  Serial.print("dB: ");
+  Serial.println(dB);
+}
+</code></pre>
