@@ -19,13 +19,33 @@
       <h1>Week 7: Outputs</h1>
       
       <p>
-        Document your minimum viable project either here or in the <a href="../13_finalproject/index.html">Final Project tab</a>.
+        This week I started my MVP. I built off of my last assignment, where I created a sensor to detect sound. However, the sensor only detected decibles, and not pitch like I wanted it to. So, I added new code that would use Fast Fourier Transform calculations to break down all of the noise that the microphone detects and then find the loudest one. The code then compares that frequency to 440 Hz, and decides whether to turn on the LED and move the motor. Here is what my breadboard looked like. 
       </p>
+      <img= src="./Assets/Wiring.JPG">
 
       <p>
-        Create a microcontroller program that integrates an input and output device, using the C++ class structure and avoiding the <code>delay()</code> function. Use the oscilliscope to measure the signals on one of the pins of your output device.
+        It took a couple of tries to get the wiring right, and to not make my microcontroller overheat, but once I figured out the wiring, the device would work. It would detect the pitch being played, and then move the motor clockwise or counterclockwise depending if the input was too high or too low, and turn on the LED when the pitch was far enough away from 440 Hz. 
       </p>
-    </section>
+<img src="./Assets/fusion.JPG">
+       <video controls>
+ <source src="./Assets/no_outside.mp4" type="video/mP4">
+      </video>
+<p>Then, because it was just a bunch of miscellanous wires all jumbled together, I wanted to put the whole thing inside a box. I debated 3d printing it, but decided that it would take too long and that it would be simpler for me just to make a box out of cardboard. So, I did that, cutting out a hole for the motor to spin through and for the LED to peek through. I also had to soder the pins on the LED to some wires because it wouldn't be long enough to peek out of the hole in the box otherwise. Finally, this is what the final product looked like. I did not make the box big enough, and beacuse of that, some of the wires are still poking out. But, I think that's okay because my main goal for making the box was to have the front look like a tuner, and to have the motor and LED peek out of the front.</p>    
+<p>
+  <video controls>
+<source src="./Assets/inbox.mp4" type="video/mp4">        
+<p>Finally, I wanted to add another output similar to the speaker I want to add later. So, I chose a buzzer. I put it in a new pin on my microcontroller, and added more code that make it so the buzzer would be set to HIGH whenever the pitch detected was incorrect.</p>
+
+<video controls>
+  <source src="./Assets/buzzer.mp4" type="video/mp4">
+</video>
+<p>
+Here is the <a href="./code.html" target="_blank">link to my code</a>.
+</p>
+
+
+
+</section>
   </body>
 
   <footer>See config.js</footer>

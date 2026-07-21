@@ -1,0 +1,127 @@
+
+
+#include <arduinoFFT.h>
+#include <ESP32Servo.h>
+
+const int micPin = A0;         
+const int servoPin = D6;     
+const int ledPin = D10;        
+const int buzzerPin = D7;     
+
+const uint16_t SAMPLES = 256;
+const double SAMPLING_FREQUENCY = 4000.0;
+
+double vReal[SAMPLES];
+double vImag[SAMPLES];
+
+ArduinoFFT<double> FFT(vReal, vImag, SAMPLES, SAMPLING_FREQUENCY);
+Servo myServo;
+
+const double targetFreq = 440.0;
+const double deadband = 20.0;
+const double minPeakMag = 150.0;
+
+const int SERVO_STOP = 90;
+const int SERVO_CW = 45;
+const int SERVO_CCW = 135;
+
+int stableCount = 0;
+int lastDecision = 0;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+
+  digitalWrite(ledPin, LOW);
+  noTone(buzzerPin);
+
+  myServo.setPeriodHertz(50);
+  myServo.attach(servoPin, 500, 2400);
+  myServo.write(SERVO_STOP);
+}
+
+void loop() {
+  const unsigned long samplingPeriodUs = (unsigned long)(1000000.0 / SAMPLING_FREQUENCY);
+
+  for (int i = 0; i < SAMPLES; i++) {
+    unsigned long t0 = micros();
+    vReal[i] = analogRead(micPin);
+    vImag[i] = 0.0;
+    while (micros() - t0 < samplingPeriodUs) {}
+  }
+
+  double mean = 0;
+  for (int i = 0; i < SAMPLES; i++) mean += vReal[i];
+  mean /= SAMPLES;
+
+  for (int i = 0; i < SAMPLES; i++) vReal[i] -= mean;
+
+  FFT.windowing(FFTWindow::Hamming, FFTDirection::Forward);
+  FFT.compute(FFTDirection::Forward);
+  FFT.complexToMagnitude();
+
+  double peakFreq = FFT.majorPeak();
+
+  int peakIndex = (int)((peakFreq * SAMPLES) / SAMPLING_FREQUENCY + 0.5);
+  double peakMag = 0;
+  if (peakIndex >= 0 && peakIndex < SAMPLES / 2) {
+    peakMag = vReal[peakIndex];
+  }
+
+  int decision = 0;
+  if (peakMag < minPeakMag) {
+    decision = 0;
+  } else if (peakFreq < targetFreq - deadband) {
+    decision = -1;
+  } else if (peakFreq > targetFreq + deadband) {
+    decision = 1;
+  } else {
+    decision = 0;
+  }
+
+  if (decision == lastDecision) {
+    stableCount++;
+  } else {
+    stableCount = 0;
+    lastDecision = decision;
+  }
+
+  if (stableCount >= 3) {
+    if (decision == -1) {
+      myServo.write(SERVO_CCW);
+      digitalWrite(ledPin, HIGH);
+      tone(buzzerPin, 440);   // buzzer ON
+    } else if (decision == 1) {
+      myServo.write(SERVO_CW);
+      digitalWrite(ledPin, HIGH);
+      tone(buzzerPin, 440);   // buzzer ON
+    } else {
+      myServo.write(SERVO_STOP);
+      digitalWrite(ledPin, LOW);
+      noTone(buzzerPin);       // buzzer OFF
+    }
+  }
+
+  Serial.print("Freq: ");
+  Serial.print(peakFreq);
+  Serial.print("  Mag: ");
+  Serial.print(peakMag);
+  Serial.print("  Decision: ");
+  Serial.print(decision);
+  Serial.print("  Stable: ");
+  Serial.print(stableCount);
+  Serial.print("  Detecting: ");
+
+  if (peakMag < minPeakMag) {
+    Serial.println("no strong tone");
+  } else if (decision == -1) {
+    Serial.println("below 440 Hz");
+  } else if (decision == 1) {
+    Serial.println("above 440 Hz");
+  } else {
+    Serial.println("on pitch");
+  }
+
+  delay(5);
+}
