@@ -17,9 +17,22 @@
   <body>
     <section class="blog">
       <h1>Week 9: Networking</h1>
-
-      <p>Working with a partner or group of 3, program something that makes use of the radio, Wifi, or bluetooth capabilities of the ESP32. Only one person per group needs to have documentation on their website. Everyone else should provide a link to that person's documentation.</p>
-      
+<p>
+  I worked with Ethan, Sophia, and Arden to create a kind of messaging, where the xiaos would talk to each other over ESP NOW. We used a potentiometer as a keyboard (which wasn't the greatest idea because it's impossible to see what letter you have selected). It took us a lot of time to get them to talk to each other because we didn't attatch the antennae to the xiaos. We also wanted to incorporate TTS, so we bought parts with DACs in them off of Amazon so our messages would get read aloud by a speaker. This was the biggest roadblock, not only becuase we had to order the parts, but also because we were having difficulty with the library. Here is a photo of our wiring.
+</p>      
+<img src="./Assets/wiring.JPG">
+<p>We tried to make the TTS work, but once we found out that that was going to be difficult, we decided to focus on making them talk to each other and having the messages be printed in the serial monitor. Once we had attatched the antennae, we were able to send messages from one xiao to another.</p>
+  <video controls>
+  <source src="./Assets/working.mp4" type="video/mp4">
+</video>
+<p>
+Here is the <a href="./code.html" target="_blank">link to my code</a>.
+</p>
+ <p>After we had finished our wiring, we wanted to figure out a way to make it handheld, so we would be able to communicate over longer distances. So, we created an enclosure for the wires with holes for the potentiometer, speaker, and button.</p>
+<img src="./Assets/case.JPG">
+<p>
+Then, we decided to tackle TTS.
+</p>
     </section>
   </body>
 

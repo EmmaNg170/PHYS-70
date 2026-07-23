@@ -1,0 +1,146 @@
+#include <esp_now.h>
+#include <WiFi.h>
+
+
+// 1. REPLACE WITH YOUR RECEIVER'S MAC ADDRESS
+uint8_t receiverAddress[] = {0x94, 0xA9, 0x90, 0x6C, 0x93, 0x48};
+// Structure to pack data over ESP-NOW
+typedef struct struct_message {
+  char text[128];
+} struct_message;
+
+struct_message outgoingData;
+esp_now_peer_info_t peerInfo;
+
+class Keyboard {
+ private:
+   int potPin, confirm;
+   String message;
+   String user;
+   String blank;
+  
+   int lastSwitchState = HIGH;      
+   unsigned long toggleStartTime = 0; 
+  
+   static constexpr const char* letters[28] = {
+     "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+     "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+     " ", "😭"
+   };
+
+ public:
+   Keyboard(int p, int c, String u) {
+     potPin = p;
+     confirm = c;
+     user = u;
+     blank = "Message from " + u + ": ";
+     message = blank;
+   }
+
+   void begin() {
+     pinMode(potPin, INPUT);
+     pinMode(confirm, INPUT_PULLUP);
+     lastSwitchState = digitalRead(confirm); 
+   }
+
+   unsigned long getToggleDuration() {
+     int currentState = digitalRead(confirm);
+     unsigned long duration = 0;
+
+     if (currentState == LOW && lastSwitchState == HIGH) {
+       toggleStartTime = millis();
+       Serial.println("Toggle Flipped ON...");
+     }
+     else if (currentState == HIGH && lastSwitchState == LOW) {
+       duration = millis() - toggleStartTime;
+       Serial.println("Toggle Flipped OFF!");
+     }
+
+     lastSwitchState = currentState; 
+     return duration; 
+   }
+
+   void type() {
+     String letter = getLetter();
+     Serial.println("Letter selected: " + letter);
+     message += letter;
+     Serial.println("Current Buffer: " + message);
+   }
+
+   void send() {
+     if (message != blank) {
+       Serial.println("\n--- SENDING VIA ESP-NOW ---");
+       Serial.println(message);
+       
+       // Convert String object to standard char array for ESP-NOW packet transmission
+       message.toCharArray(outgoingData.text, sizeof(outgoingData.text));
+
+       esp_err_t result = esp_now_send(receiverAddress, (uint8_t *) &outgoingData, sizeof(outgoingData));
+
+       if (result == ESP_OK) {
+         Serial.println("Sent successfully!");
+       } else {
+         Serial.println("Error sending message");
+       }
+       Serial.println("---------------------------\n");
+
+       message = blank; // Reset message after sending
+     }
+   }
+
+   String getLetter() {
+     int potSignal = analogRead(potPin);
+     // ESP32-C3 ADC resolution is 12-bit (0-4095) by default in Arduino core
+     int val = map(potSignal, 0, 4095, 0, 28);
+     val = constrain(val, 0, 27);
+     return String(letters[val]);
+   }
+};
+
+// Instance initialization
+Keyboard keys(A0, D6, "Arden");
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  // Initialize Wi-Fi in Station Mode
+  WiFi.mode(WIFI_STA);
+
+  // Initialize ESP-NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
+
+  // Register Peer Receiver
+  memcpy(peerInfo.peer_addr, receiverAddress, 6);
+  peerInfo.channel = 0;  
+  peerInfo.encrypt = false;
+  
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+    Serial.println("Failed to add peer");
+    return;
+  }
+
+  keys.begin();
+  Serial.println("Sender Ready!");
+}
+
+void loop() {
+  unsigned long length = keys.getToggleDuration();
+
+  if (length > 0) {
+    Serial.print("Toggle was active for: ");
+    Serial.print(length);
+    Serial.println(" ms");
+
+    if (length >= 2000) {
+      Serial.println("Action: Send Message");
+      keys.send();
+    } else if (length >= 50) { 
+      Serial.println("Action: Type Letter");
+      keys.type();
+    }
+  }
+}
