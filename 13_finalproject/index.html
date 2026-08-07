@@ -16,13 +16,35 @@
 
   <body>
     <section class="blog">
-      <h1>Final Project</h1>
+      <h1>Final Project: The Tuna Tuner</h1>
       
-      <p>
-        This is where you'll document your final project. Be sure to include a video demonstrating your project and a bill of materials. Good documentation should explain your entire build process such that someone reading your documentation could recreate your entire project from scratch. See the PS70 website for examples.
-      </p>
-      
-    </section>
+      <p>While my project isn't necessarily innovative, I wanted to make something close to one of my other interests, music. As a flute player, I spend a lot of time next to a tuner, making sure I can play each pitch correctly. Its painstaking and honestly the most boring excercise I can do. So, I wanted to make a tuner that would be funny or make me enjoy tuning a little bit more </p>
+     <h1>List of Materials</h1>
+<ol>
+  <li>3d printed container</li>
+    <li>Amplifier </li>
+      <li>Speaker</li>
+        <li>I2S Microphone</li>
+          <li>3.7V Lithium Battery</li>
+            <li>Xiao ESP32S3 (courtesy of Claudia)</li>
+              <li>3D printed needle</li>
+              <li>LED Strips</li>
+              <li>Resistor</li>
+              <li>100 microfarad capacitor</li>
+</ol>>
+<p>Below is my breadboard for my final project. It includes all of the hardware listed above, except for the I2S Microphone, capacitor, and LED strip. This iteration, which was very similar to my MVP used an analog mic. I would learn later that the analog mic was not good at picking up sound from inside the 3D printed shell. After that, I decided to change to an I2S microphone for better detection.</p>
+    <img src="./Assets/breadboard.JPG">
+<p>I originally had TTS running over Wifi, which I also learned was not very reliable.</p>
+<p>So, when Claudia offered that I could use her extra ESP32C3, because it had much more storage, I decided to store the speech as MP3 files on the Xiao itself, this way it coul run without Wifi and run more reliably. This was the point where I ended up replacing the analog microphone with an I2S microphone and my ESP32C3 with the S3.</p>
+<img src="./Assets/all.JPG">
+<p>The way my code works is tht it mounts the LittleFS file system so tht files on my Xiao can be played later, initializes the LED strip and the mic, and finally playing a startup MP3 file. Then, the microphone continuously reads raw audio samples from the microphone using one of the 2 I2S channels. Then, it calcultes the volume to see if its loud enoug to process. The dominant frequency is then found through FFT, which is then printed to the serial monitor. That frequency is compared aginst 440 Hz, the target frequency using a range of tolerable frequencies. Then, it uses conscutive match counters and requires 8 consecutive decisions to prevent the tuner from jumping around. Then, the sevo is moved to the corresponding side,the LED is changed to either green or red and a fish realted pun stored as an MP3 is played. Once the MP3 is finished playing, it clears the LED, moves the servo back. to 90 and waits for another pitch to be played. </p>
+<img src="./Assets/lighting.JPG" >
+<imc src="./Assets/END.JPG">
+<video controls>
+  <source src="./Assets/PHYS70-FINAL-VID-EMMANG (1).mp4" type="video/mp4">
+</video>
+</imc>
+</section>
   </body>
 
   <footer>See config.js</footer>
