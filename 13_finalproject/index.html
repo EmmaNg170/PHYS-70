@@ -38,6 +38,9 @@
 <p>So, when Claudia offered that I could use her extra ESP32C3, because it had much more storage, I decided to store the speech as MP3 files on the Xiao itself, this way it coul run without Wifi and run more reliably. This was the point where I ended up replacing the analog microphone with an I2S microphone and my ESP32C3 with the S3.</p>
 <img src="./Assets/all.JPG">
 <p>The way my code works is tht it mounts the LittleFS file system so tht files on my Xiao can be played later, initializes the LED strip and the mic, and finally playing a startup MP3 file. Then, the microphone continuously reads raw audio samples from the microphone using one of the 2 I2S channels. Then, it calcultes the volume to see if its loud enoug to process. The dominant frequency is then found through FFT, which is then printed to the serial monitor. That frequency is compared aginst 440 Hz, the target frequency using a range of tolerable frequencies. Then, it uses conscutive match counters and requires 8 consecutive decisions to prevent the tuner from jumping around. Then, the sevo is moved to the corresponding side,the LED is changed to either green or red and a fish realted pun stored as an MP3 is played. Once the MP3 is finished playing, it clears the LED, moves the servo back. to 90 and waits for another pitch to be played. </p>
+<p>
+Here is the <a href="./code.html" target="_blank">link to my code</a>.
+</p>
 <img src="./Assets/lighting.JPG" >
 <imc src="./Assets/END.JPG">
 <video controls>
